@@ -15,7 +15,8 @@
                             {% else %}
                                 <p>Активный</p>
                             {% endif %}
-                            <a class="p-2 btn btn-outline-primary" href="{% url 'users:edit' object.pk %}">Редактировать</a>
+                            <a class="p-2 btn btn-outline-primary"
+                               href="{% url 'users:edit' object.pk %}">Редактировать</a>
                         </div>
                     </div>
                 </div>
