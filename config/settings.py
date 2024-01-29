@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'mailing',
     'django_apscheduler',
+    'mailing',
     'users',
     'blog',
 
@@ -89,8 +89,8 @@ DATABASES = {
         'NAME': 'mailing',
         'USER': 'postgres',
         'PASSWORD': os.getenv("DB_PASSWORD"),
-        # 'HOST': '127.0.0.1',
-        # 'PORT': 5432,
+        'HOST': '127.0.0.1',
+        'PORT': 5432
     }
 }
 

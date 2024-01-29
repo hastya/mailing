@@ -7,17 +7,17 @@ from mailing.models import Mailing, Logs
 
 
 def my_job():
-    day = timedelta(days=1, hours=0, minutes=0)
+    day = timedelta(days=0, hours=0, minutes=0)
     weak = timedelta(days=7, hours=0, minutes=0)
     month = timedelta(days=30, hours=0, minutes=0)
 
-    mailings = Mailing.objects.all().filter(status='Создана')\
+    mailings = Mailing.objects.all().filter(status='start')\
         .filter(is_activated=True)\
         .filter(next_date__lte=datetime.now(pytz.timezone('Europe/Moscow')))\
         .filter(end_date__gte=datetime.now(pytz.timezone('Europe/Moscow')))
 
     for mailing in mailings:
-        mailing.status = 'Запущена'
+        mailing.status = 'start'
         mailing.save()
         emails_list = [client.email for client in mailing.client.all()]
 
@@ -30,25 +30,24 @@ def my_job():
         )
 
         if result == 1:
-            status = 'Отправлено'
+            status = 'send'
         else:
-            status = 'Ошибка отправки'
+            status = 'error sending mail'
 
         log = Logs(mailing=mailing, status=status)
         log.save()
 
-        if mailing.interval == 'ежедневно':
+        if mailing.interval == 'once_a_day':
             mailing.next_date = log.last_mailing_time + day
-        elif mailing.interval == 'раз в неделю':
+        elif mailing.interval == 'once_a_week':
             mailing.next_date = log.last_mailing_time + weak
-        elif mailing.interval == 'раз в месяц':
+        elif mailing.interval == 'once_a_month':
             mailing.next_date = log.last_mailing_time + month
 
-
         if mailing.next_date < mailing.end_date:
-            mailing.status = 'Создана'
+            mailing.status = 'created'
         else:
-            mailing.status = 'Завершена'
+            mailing.status = 'finish'
         mailing.save()
 
 
