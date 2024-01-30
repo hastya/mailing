@@ -35,25 +35,25 @@ class Command(BaseCommand):
 
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(second="*/30"),  # Every 1 minute
+            trigger=CronTrigger(second="*/10"),  # Every 1 minute
             id="sendmail",  # The `id` assigned to each job MUST be unique
             max_instances=1,
             replace_existing=True,
         )
         print("Added job 'sendmail'.")
 
-        # scheduler.add_job(
-        #     delete_old_job_executions,
-        #     trigger=CronTrigger(
-        #         day_of_week="mon", hour="00", minute="00"
-        #     ),  # Midnight on Monday, before start of the next work week.
-        #     id="delete_old_job_executions",
-        #     max_instances=1,
-        #     replace_existing=True,
-        # )
-        # logger.info(
-        #     "Added weekly job: 'delete_old_job_executions'."
-        # )
+        scheduler.add_job(
+            delete_old_job_executions,
+            trigger=CronTrigger(
+                day_of_week="mon", hour="00", minute="00"
+            ),  # Midnight on Monday, before start of the next work week.
+            id="delete_old_job_executions",
+            max_instances=1,
+            replace_existing=True,
+        )
+        logger.info(
+            "Added weekly job: 'delete_old_job_executions'."
+        )
 
         try:
             print("Starting scheduler...")
@@ -62,3 +62,17 @@ class Command(BaseCommand):
             print("Stopping scheduler...")
             scheduler.shutdown()
             print("Scheduler shut down successfully!")
+
+# from apscheduler.schedulers.background import BackgroundScheduler
+# from django.core.management import call_command
+#
+#
+#
+# def mailing_scheduler():
+#     return call_command('start_mailing')
+#
+#
+# def start():
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(mailing_scheduler, 'interval', seconds=5)
+#     scheduler.start()

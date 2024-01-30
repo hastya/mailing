@@ -26,8 +26,13 @@ class Client(models.Model):
     def __str__(self):
         return f'{self.email} ({self.full_name})'
 
+    def save(self, *args, **kwargs):
+        if Client.objects.filter(user=self.user, email=self.email).exists():
+            raise ValueError
+        super().save(*args, **kwargs)
+
     def __repr__(self):
-        return f'{self.email} ({self.full_name})'
+        return f'{self.email}'
 
     class Meta:
         verbose_name = 'клиент'
@@ -49,7 +54,7 @@ class Message(models.Model):
 
 class Mailing(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название рассылки')
-    client = models.ManyToManyField(Client, verbose_name='Получатели')
+    client = models.ManyToManyField(Client, related_name='mailings', verbose_name='Получатели')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE)
     start_date = models.DateTimeField(default=timezone.now, verbose_name='Время старта рассылки')
     next_date = models.DateTimeField(default=timezone.now, verbose_name='Время следующей рассылки')
@@ -73,9 +78,13 @@ class Mailing(models.Model):
 
 
 class Logs(models.Model):
+    STATUS_CHOICES = (
+        ('success', 'success'),
+        ('failed', 'failed'),
+    )
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='рассылка', **NULLABLE)
     last_mailing_time = models.DateTimeField(auto_now=True, verbose_name='время последней рассылки')
-    status = models.CharField(max_length=50, verbose_name='статус попытки', null=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='статус попытки', null=True)
     response = models.CharField(max_length=200, verbose_name="ответ почтового сервера", **NULLABLE)
 
     def __str__(self):

@@ -7,7 +7,7 @@ from mailing.models import Mailing, Logs
 
 
 def my_job():
-    day = timedelta(days=0, hours=0, minutes=0)
+    day = timedelta(days=1, hours=0, minutes=0)
     weak = timedelta(days=7, hours=0, minutes=0)
     month = timedelta(days=30, hours=0, minutes=0)
 
